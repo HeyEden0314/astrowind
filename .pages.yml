@@ -1,33 +1,185 @@
+# Pages CMS config — https://pagescms.org/docs/configuration/
+# Editors use https://app.pagescms.org ; AstroWind reads the committed Markdown at build time.
+
 media:
   input: public/images
   output: /images
+  rename: safe
+  categories: [image]
+
+settings:
+  # Keep keys that are not in this schema (e.g. metadata on existing posts).
+  content:
+    merge: true
+  commit:
+    identity: user
+    templates:
+      create: 'content: add {path} (via Pages CMS)'
+      update: 'content: update {path} (via Pages CMS)'
+      delete: 'content: delete {path} (via Pages CMS)'
+      rename: 'content: rename {oldPath} to {newPath} (via Pages CMS)'
 
 content:
-  - name: posts
-    label: 博客文章
-    type: collection
-    path: src/data/post
+  - name: blog
+    label: 博客
+    type: group
+    items:
+      - name: posts
+        label: 博客文章
+        type: collection
+        path: src/data/post
+        format: yaml-frontmatter
+        filename:
+          template: '{title}.md'
+          field: create
+        # MDX demo posts embed Astro components; edit those in the repo, not the CMS.
+        exclude:
+          - markdown-elements-demo-post.mdx
+          - astrowind-template-in-depth.mdx
+        view:
+          fields: [title, publishDate, category, draft]
+          primary: title
+          sort: [publishDate, title]
+          search: [title, excerpt, category, tags]
+          default:
+            sort: publishDate
+            order: desc
+        fields:
+          - name: title
+            label: 文章标题
+            type: string
+            required: true
+          - name: excerpt
+            label: 文章摘要
+            type: text
+            description: 列表页与 SEO 描述，建议不超过 155 个字符。
+          - name: publishDate
+            label: 发布日期
+            type: date
+            options:
+              time: true
+              format: "yyyy-MM-dd'T'HH:mm:ss'Z'"
+          - name: updateDate
+            label: 更新日期
+            type: date
+            default: ''
+            options:
+              time: true
+              format: "yyyy-MM-dd'T'HH:mm:ss'Z'"
+          - name: image
+            label: 封面图
+            type: image
+            description: 上传到 public/images/thumd，或保留现有的外部图片 URL。
+            options:
+              path: public/images/thumd
+              categories: [image]
+              extensions: [jpg, jpeg, png, webp, gif, svg]
+          - name: imageAlt
+            label: 封面图替代文字
+            type: string
+            description: 描述封面图内容。装饰性图片可留空。
+          - name: category
+            label: 分类
+            type: string
+          - name: tags
+            label: 标签
+            type: string
+            list: true
+          - name: author
+            label: 作者
+            type: string
+          - name: draft
+            label: 存为草稿
+            type: boolean
+            default: false
+          - name: body
+            label: 正文内容
+            type: rich-text
+            options:
+              format: markdown
+              switcher: true
+              path: public/images
+              rename: safe
+
+  - name: pages
+    label: 页面
+    type: group
+    items:
+      - name: terms
+        label: 服务条款
+        type: file
+        path: src/pages/terms.md
+        format: yaml-frontmatter
+        fields:
+          - name: title
+            label: 页面标题
+            type: string
+            required: true
+          - name: layout
+            type: string
+            hidden: true
+            default: '~/layouts/MarkdownLayout.astro'
+          - name: body
+            label: 正文
+            type: rich-text
+            options:
+              format: markdown
+              media: false
+      - name: privacy
+        label: 隐私政策
+        type: file
+        path: src/pages/privacy.md
+        format: yaml-frontmatter
+        fields:
+          - name: title
+            label: 页面标题
+            type: string
+            required: true
+          - name: layout
+            type: string
+            hidden: true
+            default: '~/layouts/MarkdownLayout.astro'
+          - name: body
+            label: 正文
+            type: rich-text
+            options:
+              format: markdown
+              media: false
+
+  - name: site
+    label: 站点信息
+    type: file
+    path: src/config.yaml
+    format: yaml
     fields:
-      - name: title
-        label: 文章标题
-        type: string
-        required: true
-      - name: publishDate
-        label: 发布日期
-        type: date
-      - name: description
-        label: 文章摘要
-        type: string
-      - name: category
-        label: 分类
-        type: string
-      - name: tags
-        label: 标签
-        type: list
-      - name: draft
-        label: 存为草稿
-        type: boolean
-        default: false
-      - name: body
-        label: 正文内容
-        type: rich-text
+      - name: site
+        label: 站点
+        type: object
+        fields:
+          - name: name
+            label: 站点名称
+            type: string
+            required: true
+          - name: site
+            label: 网站地址
+            type: string
+            required: true
+            description: 完整 URL，例如 https://example.com
+      - name: metadata
+        label: SEO
+        type: object
+        fields:
+          - name: title
+            label: 标题
+            type: object
+            fields:
+              - name: default
+                label: 默认标题
+                type: string
+              - name: template
+                label: 标题模板
+                type: string
+                description: 使用 %s 代表页面标题，例如 '%s — 站点名'
+          - name: description
+            label: 站点简介
+            type: text

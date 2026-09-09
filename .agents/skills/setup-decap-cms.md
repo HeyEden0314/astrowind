@@ -1,6 +1,8 @@
 # Set Up Decap CMS (Netlify)
 
-The template ships a Decap CMS admin at `/decapcms/` (`public/decapcms/index.html` + `config.yml`). It needs a Git-based backend; the shipped config uses Netlify's `git-gateway`.
+This project uses **Pages CMS** as the primary editor (see `setup-pages-cms.md`). Do not run Decap against the same collections unless you have disabled Pages CMS.
+
+The template still ships a Decap CMS admin at `/decapcms/` (`public/decapcms/index.html` + `config.yml`). It needs a Git-based backend; the shipped config uses Netlify's `git-gateway`.
 
 ## Steps
 
