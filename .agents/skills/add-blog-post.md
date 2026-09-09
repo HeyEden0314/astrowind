@@ -1,5 +1,7 @@
 # Add a Blog Post
 
+Editors can also create posts in [Pages CMS](https://app.pagescms.org) (see `setup-pages-cms.md`). The steps below are the repo-side equivalent.
+
 ## Steps
 
 1. Create a new `.md` or `.mdx` file in `src/data/post/`
