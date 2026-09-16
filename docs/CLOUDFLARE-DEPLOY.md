@@ -1,5 +1,7 @@
 # Cloudflare 部署指南（免费套餐）
 
+> **Agent 部署状态（2026-09-16）：** 本仓库 Worker 代码已就绪，但 **Eden 的 Cloudflare 账户尚未在 CI/Agent 环境完成认证**，因此 **生产 Worker 尚未部署到 Eden 账户**。请按下方「0. 认证」完成登录后运行 `bash scripts/deploy-worker.sh`。临时预览账户（`wrangler deploy --temporary`）无法绑定 Cron、无法使用 Workers AI，**不能**替代正式部署。
+
 AI 中文情报站由两部分组成：
 
 1. **Ingest Worker** — 每日 Cron 抓取 RSS、Workers AI 翻译、写入 D1
@@ -41,28 +43,54 @@ npm run build
 
 跳过翻译（仅测 RSS）：`INGEST_SKIP_TRANSLATE=1 npm run ingest`
 
-## 1. 创建 D1 数据库
+## 0. 认证（Eden 必须完成其一）
+
+### 方式 A — Wrangler OAuth（推荐，本机终端）
+
+```bash
+cd worker
+npx wrangler login
+```
+
+在浏览器完成 Cloudflare 登录；OAuth 回调需能访问本机 `localhost:8976`。
+
+### 方式 B — API Token（适合 CI / 无浏览器环境）
+
+1. [Cloudflare Dashboard → API Tokens](https://dash.cloudflare.com/profile/api-tokens) → Create Token
+2. 模板 **Edit Cloudflare Workers**，并包含：**Workers Scripts**、**D1**、**Workers AI**
+3. 导出：
+
+```bash
+export CLOUDFLARE_API_TOKEN="your-token"
+export CLOUDFLARE_ACCOUNT_ID="your-account-id"
+```
+
+### 方式 C — Cursor Cloudflare MCP
+
+Cursor → Settings → MCP → **Cloudflare-bindings** → Authenticate。
+
+验证：`cd worker && npx wrangler whoami`
+
+## 1. 一键部署 Worker
 
 ```bash
 cd worker
 npm install
-npx wrangler d1 create ai-intelligence
+bash ../scripts/deploy-worker.sh
 ```
 
-将输出的 `database_id` 填入 `worker/wrangler.toml` 的 `database_id`。
-
-```bash
-npx wrangler d1 migrations apply ai-intelligence --remote
-```
-
-## 2. 部署 Ingest Worker
+或手动：
 
 ```bash
 cd worker
+npx wrangler d1 create ai-intelligence --update-config --binding DB
+npx wrangler d1 migrations apply ai-intelligence --remote
 npx wrangler deploy
 ```
 
-记录 Worker URL，例如 `https://ai-intelligence-ingest.<account>.workers.dev`。
+记录 Worker URL，例如 `https://ai-intelligence-ingest.<account-subdomain>.workers.dev`。
+
+**Cron：** `0 8 * * *`（每天 08:00 UTC）。免费套餐 **1 个** Cron；部署后在 Dashboard → Triggers 确认。
 
 ### 可选：首次手动抓取
 
@@ -93,9 +121,11 @@ Cron 默认每天 **08:00 UTC** 运行（见 `worker/wrangler.toml`）。
    - **Build command:** `npm run build`
    - **Build output directory:** `dist`
    - **Node.js version:** 22（与 `package.json` engines 一致）
-4. 环境变量：
-   - `ARTICLES_API_URL` = `https://ai-intelligence-ingest.<account>.workers.dev/api/articles`
+4. 环境变量（Production + Preview 建议都设）：
+   - `ARTICLES_API_URL` = `https://ai-intelligence-ingest.<account-subdomain>.workers.dev/api/articles`
 5. 保存并部署
+
+部署 Worker 并跑过首次 ingest 后，将上述 URL 写入 Pages 环境变量；`prebuild` 会从 API 拉取 D1 中的文章。
 
 `prebuild` 优先从 Worker API 同步；若无 `ARTICLES_API_URL`，则自动运行 `npm run ingest` 抓取真实 RSS 并写入 `src/data/intelligence/articles.json`。
 
@@ -138,5 +168,6 @@ RSS (OpenAI, Anthropic, Cursor, xAI, …)
 ## 故障排查
 
 - **首页无新文章：** 检查 Cron 日志、`curl /api/articles` 是否有数据、`ARTICLES_API_URL` 是否配置
-- **翻译失败：** Workers AI 需在账户中启用；查看 Worker 日志中的 fallback 信息
+- **翻译失败：** Workers AI 需在账户中启用；Worker 会依次尝试 m2m100 → GLM-4.7-Flash → MyMemory 免费机翻
+- **Agent 无法部署：** 需 Eden 完成上文「0. 认证」；不要使用 `wrangler deploy --temporary` 作为生产环境（无 Cron、预览域名有 Bot 挑战、临时账户无 Workers AI）
 - **某个源抓取失败：** 查看 ingest 响应中的 `sourcesFailed`；官方 RSS URL 可能变更，编辑 `worker/src/sources.ts`
