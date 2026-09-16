@@ -1,0 +1,43 @@
+---
+import Layout from '~/layouts/PageLayout.astro';
+import { INTELLIGENCE_SOURCES } from '~/utils/intelligence';
+
+const metadata = {
+  title: '信息来源',
+  description: 'AI 中文情报站收录的官方 RSS/Atom 博客来源。',
+};
+---
+
+<Layout metadata={metadata}>
+  <section class="bg-page">
+    <div class="mx-auto max-w-3xl px-4 py-12 md:px-6">
+      <header class="mb-8">
+        <h1 class="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">信息来源</h1>
+        <p class="mt-3 text-lg text-muted">以下均为官方博客 RSS/Atom 源，按名称排列。</p>
+      </header>
+
+      <ul
+        class="divide-y divide-gray-200 rounded-xl border border-gray-200 bg-white dark:divide-gray-700 dark:border-gray-700 dark:bg-slate-900"
+      >
+        {
+          INTELLIGENCE_SOURCES.map((source) => (
+            <li class="flex flex-wrap items-center justify-between gap-3 px-5 py-4">
+              <div>
+                <p class="font-semibold text-gray-900 dark:text-white">{source.name}</p>
+                <p class="text-sm text-muted">{source.id}</p>
+              </div>
+              <a
+                href={source.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-sm font-medium text-primary hover:underline"
+              >
+                访问官方博客 →
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+</Layout>

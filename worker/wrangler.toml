@@ -1,0 +1,19 @@
+name = "ai-intelligence-ingest"
+main = "src/index.ts"
+compatibility_date = "2025-03-01"
+
+# Daily ingest at 08:00 UTC (~16:00 Beijing). Adjust in the Cloudflare dashboard if needed.
+[triggers]
+crons = ["0 8 * * *"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "ai-intelligence"
+database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+
+[ai]
+binding = "AI"
+
+# Optional: Cloudflare Pages deploy hook URL — triggers a static rebuild after ingest.
+# [vars]
+# DEPLOY_HOOK_URL = "https://api.cloudflare.com/client/v4/pages/webhooks/deploy_hooks/..."

@@ -1,9 +1,8 @@
- 
-title: 文章标题                    # 必填
+title: 文章标题 # 必填
 publishDate: 2026-09-09T00:00:00Z
-updateDate: 2026-09-09T00:00:00Z   # 可选
+updateDate: 2026-09-09T00:00:00Z # 可选
 excerpt: 列表页和 SEO 摘要，建议不超过 155 字
-image: /images/thumd/cover.jpg     # 或 https://…
+image: /images/thumd/cover.jpg # 或 https://…
 imageAlt: 封面图在讲什么
 category: Tutorials
 tags:

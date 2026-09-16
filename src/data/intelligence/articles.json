@@ -1,0 +1,60 @@
+{
+  "articles": [
+    {
+      "id": "seed_openai_1",
+      "source_id": "openai",
+      "source_name": "OpenAI",
+      "original_title": "Introducing GPT-4.1",
+      "title_zh": "推出 GPT-4.1",
+      "excerpt_zh": "我们发布了 GPT-4.1 系列模型，在编码、指令遵循和长上下文方面表现更出色。",
+      "original_url": "https://openai.com/index/gpt-4-1/",
+      "published_at": "2025-04-14T00:00:00.000Z",
+      "ingested_at": "2026-03-16T00:00:00.000Z"
+    },
+    {
+      "id": "seed_anthropic_1",
+      "source_id": "anthropic",
+      "source_name": "Anthropic",
+      "original_title": "Claude 3.7 Sonnet and Claude Code",
+      "title_zh": "Claude 3.7 Sonnet 与 Claude Code",
+      "excerpt_zh": "Anthropic 发布 Claude 3.7 Sonnet，并推出面向开发者的 Claude Code 工具。",
+      "original_url": "https://www.anthropic.com/news/claude-3-7-sonnet",
+      "published_at": "2025-02-24T00:00:00.000Z",
+      "ingested_at": "2026-03-16T00:00:00.000Z"
+    },
+    {
+      "id": "seed_cursor_1",
+      "source_id": "cursor",
+      "source_name": "Cursor",
+      "original_title": "Cursor 1.0",
+      "title_zh": "Cursor 1.0 正式发布",
+      "excerpt_zh": "Cursor 1.0 将 AI 编程体验带入生产环境，支持更稳定的 Agent 工作流与团队协作。",
+      "original_url": "https://cursor.com/blog/1-0",
+      "published_at": "2025-06-04T00:00:00.000Z",
+      "ingested_at": "2026-03-16T00:00:00.000Z"
+    },
+    {
+      "id": "seed_xai_1",
+      "source_id": "xai",
+      "source_name": "xAI",
+      "original_title": "Grok 3 Beta",
+      "title_zh": "Grok 3 Beta 上线",
+      "excerpt_zh": "xAI 推出 Grok 3 Beta，强调推理能力与实时信息获取。",
+      "original_url": "https://x.ai/blog/grok-3",
+      "published_at": "2025-02-17T00:00:00.000Z",
+      "ingested_at": "2026-03-16T00:00:00.000Z"
+    },
+    {
+      "id": "seed_deepmind_1",
+      "source_id": "google-deepmind",
+      "source_name": "Google DeepMind",
+      "original_title": "Gemini 2.0 is here",
+      "title_zh": "Gemini 2.0 正式发布",
+      "excerpt_zh": "Google DeepMind 发布 Gemini 2.0，面向多模态与 Agent 场景进行优化。",
+      "original_url": "https://deepmind.google/discover/blog/gemini-2-0/",
+      "published_at": "2024-12-11T00:00:00.000Z",
+      "ingested_at": "2026-03-16T00:00:00.000Z"
+    }
+  ],
+  "syncedAt": "2026-03-16T00:00:00.000Z"
+}

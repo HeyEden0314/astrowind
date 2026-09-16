@@ -1,0 +1,7 @@
+# Cloudflare Pages — static Astro output (see docs/CLOUDFLARE-DEPLOY.md)
+name = "ai-intelligence"
+compatibility_date = "2025-03-01"
+pages_build_output_dir = "dist"
+
+# Set in the Pages dashboard (Settings → Environment variables):
+# ARTICLES_API_URL = https://<your-ingest-worker>.workers.dev/api/articles

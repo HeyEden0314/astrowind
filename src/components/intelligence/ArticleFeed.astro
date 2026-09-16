@@ -1,0 +1,25 @@
+---
+import ArticleCard from '~/components/intelligence/ArticleCard.astro';
+import type { IntelligenceArticle } from '~/types/intelligence';
+
+export interface Props {
+  articles: IntelligenceArticle[];
+}
+
+const { articles } = Astro.props;
+---
+
+{
+  articles.length === 0 ? (
+    <div class="rounded-xl border border-dashed border-gray-300 p-10 text-center dark:border-gray-600">
+      <p class="text-lg font-medium text-gray-900 dark:text-white">暂无情报</p>
+      <p class="mt-2 text-muted">定时任务运行后，最新 AI 官方博客将显示在这里。</p>
+    </div>
+  ) : (
+    <div class="grid gap-5 md:gap-6">
+      {articles.map((article) => (
+        <ArticleCard article={article} />
+      ))}
+    </div>
+  )
+}
