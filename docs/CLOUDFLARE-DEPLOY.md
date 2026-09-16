@@ -1,6 +1,15 @@
 # Cloudflare 部署指南（免费套餐）
 
-> **Agent 部署状态（2026-09-16）：** 本仓库 Worker 代码已就绪，但 **Eden 的 Cloudflare 账户尚未在 CI/Agent 环境完成认证**，因此 **生产 Worker 尚未部署到 Eden 账户**。请按下方「0. 认证」完成登录后运行 `bash scripts/deploy-worker.sh`。临时预览账户（`wrangler deploy --temporary`）无法绑定 Cron、无法使用 Workers AI，**不能**替代正式部署。
+> **生产部署（2026-09-16，Eden 账户 `heyuan0314@gmail.com` / `ade8b4f2d997573278b0954562adee1a`）：**
+>
+> | 项 | 值 |
+> | --- | --- |
+> | **Worker URL** | https://ai-intelligence-ingest.heyuan0314.workers.dev |
+> | **Cron** | `0 8 * * *`（每天 08:00 UTC）已绑定；Worker handlers: `fetch`, `scheduled` |
+> | **D1** | `ai-intelligence` (`25077a70-3abe-41ee-aebe-062c196e0baf`) |
+> | **首次 POST /api/ingest** | `GET /api/articles` → **count = 23**（openai 8 + anthropic 8 + cursor 7）。xai / google-deepmind / meta-ai / google-ai 未写入，HTTP ingest 约 40s 后中断（免费套餐 CPU/墙钟上限）。每日 Cron 限额更长，08:00 UTC 应补抓剩余源。 |
+>
+> Pages 环境变量：`ARTICLES_API_URL=https://ai-intelligence-ingest.heyuan0314.workers.dev/api/articles`
 
 AI 中文情报站由两部分组成：
 
@@ -88,14 +97,14 @@ npx wrangler d1 migrations apply ai-intelligence --remote
 npx wrangler deploy
 ```
 
-记录 Worker URL，例如 `https://ai-intelligence-ingest.<account-subdomain>.workers.dev`。
+记录 Worker URL：`https://ai-intelligence-ingest.heyuan0314.workers.dev`。
 
-**Cron：** `0 8 * * *`（每天 08:00 UTC）。免费套餐 **1 个** Cron；部署后在 Dashboard → Triggers 确认。
+**Cron：** `0 8 * * *`（每天 08:00 UTC）。免费套餐 **1 个** Cron；2026-09-16 部署输出已确认 `schedule: 0 8 * * *`，Worker handlers 含 `scheduled`。
 
 ### 可选：首次手动抓取
 
 ```bash
-curl -X POST "https://ai-intelligence-ingest.<account>.workers.dev/api/ingest"
+curl -X POST "https://ai-intelligence-ingest.heyuan0314.workers.dev/api/ingest"
 ```
 
 ### 可选：每日构建后自动发布 Pages

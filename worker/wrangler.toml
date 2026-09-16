@@ -9,7 +9,7 @@ crons = ["0 8 * * *"]
 [[d1_databases]]
 binding = "DB"
 database_name = "ai-intelligence"
-database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+database_id = "25077a70-3abe-41ee-aebe-062c196e0baf"
 
 [ai]
 binding = "AI"

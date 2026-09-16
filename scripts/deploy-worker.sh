@@ -17,7 +17,18 @@ CONFIG="$ROOT/worker/wrangler.toml"
 
 if grep -q 'REPLACE_WITH_YOUR_D1_DATABASE_ID' "$CONFIG"; then
   echo "→ Creating D1 database '$DB_NAME'..."
-  npx wrangler d1 create "$DB_NAME" --update-config --binding DB
+  CREATE_OUT="$(npx wrangler d1 create "$DB_NAME" --update-config --binding DB 2>&1 | tee /dev/stderr)"
+  DB_ID="$(printf '%s\n' "$CREATE_OUT" | sed -n 's/.*database_id = "\([0-9a-f-]*\)".*/\1/p' | tail -1)"
+  if grep -q 'REPLACE_WITH_YOUR_D1_DATABASE_ID' "$CONFIG"; then
+    if [ -z "$DB_ID" ]; then
+      echo "❌ D1 created but wrangler.toml still has a placeholder. Set database_id and re-run."
+      exit 1
+    fi
+    echo "→ Writing database_id $DB_ID into wrangler.toml"
+    # portable in-place replace (macOS / GNU sed)
+    sed -i.bak "s/REPLACE_WITH_YOUR_D1_DATABASE_ID/$DB_ID/" "$CONFIG"
+    rm -f "$CONFIG.bak"
+  fi
 else
   echo "→ Using existing D1 database_id from wrangler.toml"
 fi
