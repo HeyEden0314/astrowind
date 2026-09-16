@@ -1,0 +1,55 @@
+{
+  "itemsPerFeed": 8,
+  "maxArticlesInExport": 120,
+  "lookbackDays": 90,
+  "sources": [
+    {
+      "id": "openai",
+      "name": "OpenAI",
+      "feedUrl": "https://openai.com/news/rss.xml",
+      "official": true
+    },
+    {
+      "id": "anthropic",
+      "name": "Anthropic",
+      "feedUrl": "https://raw.githubusercontent.com/Olshansk/rss-feeds/main/feeds/feed_anthropic_news.xml",
+      "official": false,
+      "mirrorNote": "Anthropic 无官方 RSS；使用社区镜像（每小时更新）"
+    },
+    {
+      "id": "cursor",
+      "name": "Cursor",
+      "feedUrl": "https://cursor.com/atom.xml",
+      "official": true,
+      "lookbackDays": 3650,
+      "mirrorNote": "官方 Atom 更新较慢；展示 feed 内最新文章"
+    },
+    {
+      "id": "xai",
+      "name": "xAI",
+      "feedUrl": "https://raw.githubusercontent.com/Olshansk/rss-feeds/main/feeds/feed_xainews.xml",
+      "official": false,
+      "lookbackDays": 180,
+      "mirrorNote": "x.ai 无公开 RSS；使用社区镜像"
+    },
+    {
+      "id": "google-deepmind",
+      "name": "Google DeepMind",
+      "feedUrl": "https://deepmind.google/blog/rss.xml",
+      "official": true
+    },
+    {
+      "id": "meta-ai",
+      "name": "Meta AI",
+      "feedUrl": "https://raw.githubusercontent.com/Olshansk/rss-feeds/main/feeds/feed_meta_ai.xml",
+      "official": false,
+      "mirrorNote": "Meta AI 无官方 RSS；使用社区镜像"
+    },
+    {
+      "id": "google-ai",
+      "name": "Google AI",
+      "feedUrl": "https://blog.google/technology/ai/rss/",
+      "official": true
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-import { FEED_SOURCES } from './sources';
+import { FEED_SOURCES, getItemsPerFeed, INGEST_LOOKBACK_DAYS, type FeedSource } from './sources';
 import { fetchFeedItems } from './rss';
 import { translateToChinese } from './translate';
 import type { Env } from './types';
@@ -19,7 +19,22 @@ export interface IngestSummary {
   articlesSkipped: number;
 }
 
-export async function runIngest(env: Env, itemsPerFeed = 5): Promise<IngestSummary> {
+const SOURCE_LOOKBACK_DAYS: Partial<Record<string, number>> = {
+  cursor: 3650,
+  xai: 180,
+};
+
+function sourceLookbackDays(source: FeedSource): number {
+  return SOURCE_LOOKBACK_DAYS[source.id] ?? INGEST_LOOKBACK_DAYS;
+}
+
+function withinLookback(iso: string, lookbackDays: number): boolean {
+  const published = new Date(iso).getTime();
+  const cutoff = Date.now() - lookbackDays * 24 * 60 * 60 * 1000;
+  return published >= cutoff;
+}
+
+export async function runIngest(env: Env, itemsPerFeed = getItemsPerFeed(env)): Promise<IngestSummary> {
   const summary: IngestSummary = {
     sourcesProcessed: 0,
     sourcesFailed: [],
@@ -33,6 +48,8 @@ export async function runIngest(env: Env, itemsPerFeed = 5): Promise<IngestSumma
       summary.sourcesProcessed += 1;
 
       for (const item of items) {
+        if (!withinLookback(item.publishedAt, sourceLookbackDays(source))) continue;
+
         const existing = await env.DB.prepare('SELECT id FROM articles WHERE original_url = ?')
           .bind(item.link)
           .first<{ id: string }>();

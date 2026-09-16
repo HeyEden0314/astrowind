@@ -2,6 +2,7 @@ export interface Env {
   DB: D1Database;
   AI: Ai;
   DEPLOY_HOOK_URL?: string;
+  INGEST_ITEMS_PER_FEED?: string;
 }
 
 export interface ParsedFeedItem {

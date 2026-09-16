@@ -10,6 +10,7 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
+    "ingest": "node scripts/ingest.mjs",
     "prebuild": "node scripts/sync-articles.mjs",
     "build": "astro build",
     "preview": "astro preview",
@@ -31,6 +32,7 @@
     "astro": "^7.3.1",
     "astro-icon": "^1.1.5",
     "astro-seo": "^1.2.0",
+    "fast-xml-parser": "^5.2.5",
     "limax": "4.2.3",
     "lodash.merge": "^4.6.2",
     "unpic": "^4.2.2"

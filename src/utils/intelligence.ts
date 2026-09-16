@@ -24,12 +24,13 @@ export function formatChineseDate(iso: string): string {
 }
 
 export const INTELLIGENCE_SOURCES = [
-  { id: 'openai', name: 'OpenAI', url: 'https://openai.com/blog' },
+  { id: 'openai', name: 'OpenAI', url: 'https://openai.com/news' },
   { id: 'anthropic', name: 'Anthropic', url: 'https://www.anthropic.com/news' },
   { id: 'cursor', name: 'Cursor', url: 'https://cursor.com/blog' },
-  { id: 'xai', name: 'xAI', url: 'https://x.ai/blog' },
+  { id: 'xai', name: 'xAI', url: 'https://x.ai/news' },
   { id: 'google-deepmind', name: 'Google DeepMind', url: 'https://deepmind.google/blog' },
   { id: 'meta-ai', name: 'Meta AI', url: 'https://ai.meta.com/blog' },
+  { id: 'google-ai', name: 'Google AI', url: 'https://blog.google/technology/ai/' },
 ] as const;
 
 /** Gradient classes for source cover placeholders (inspired by editorial card layouts). */
@@ -40,6 +41,7 @@ export const SOURCE_GRADIENTS: Record<string, string> = {
   xai: 'from-gray-700 via-gray-800 to-black',
   'google-deepmind': 'from-blue-600 via-indigo-600 to-blue-800',
   'meta-ai': 'from-sky-500 via-blue-600 to-blue-800',
+  'google-ai': 'from-red-500 via-rose-500 to-orange-600',
 };
 
 export function getSourceGradient(sourceId: string): string {

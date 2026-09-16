@@ -16,6 +16,31 @@ AI 中文情报站由两部分组成：
 
 无需付费翻译 API 或 Netlify。
 
+## 抓取策略（每日 Cron）
+
+| 配置项                  | 默认值         | 说明                                             |
+| ----------------------- | -------------- | ------------------------------------------------ |
+| `INGEST_ITEMS_PER_FEED` | **8**          | 每个来源每次最多抓取最新 N 篇（Worker 环境变量） |
+| `lookbackDays`          | **90**         | 忽略早于 90 天的 RSS 条目                        |
+| `maxArticlesInExport`   | **120**        | 静态 JSON / API 最多导出篇数                     |
+| 去重                    | `original_url` | 已入库 URL 跳过，Cron 每日只插入**新**文章       |
+
+每个来源在一次 Cron 中会遍历 RSS 中最多 8 条**新**文章（非仅 1 条）。若某天某源发布 3 篇新文，则 3 篇全部入库。
+
+来源列表见根目录 `ingest.config.json`（与 `worker/src/sources.ts` 同步）。Anthropic / Meta AI / xAI 无官方 RSS，使用 [Olshansk/rss-feeds](https://github.com/Olshansk/rss-feeds) 社区镜像并在页面标注。
+
+### 本地一次性抓取（无需 Cloudflare 登录）
+
+```bash
+npm install
+npm run ingest          # RSS → 翻译 → src/data/intelligence/articles.json
+npm run build
+```
+
+本地翻译顺序：若设置 `CLOUDFLARE_ACCOUNT_ID` + `CLOUDFLARE_API_TOKEN` 则使用 **Workers AI**；否则使用 MyMemory 免费机翻（仅用于本地/CI 生成静态 JSON）。**线上 Cron 始终使用 Workers AI。**
+
+跳过翻译（仅测 RSS）：`INGEST_SKIP_TRANSLATE=1 npm run ingest`
+
 ## 1. 创建 D1 数据库
 
 ```bash
@@ -72,7 +97,7 @@ Cron 默认每天 **08:00 UTC** 运行（见 `worker/wrangler.toml`）。
    - `ARTICLES_API_URL` = `https://ai-intelligence-ingest.<account>.workers.dev/api/articles`
 5. 保存并部署
 
-`prebuild` 会从 API 拉取文章写入 `src/data/intelligence/articles.json`，再执行 `astro build`。API 不可用时使用仓库内 seed 数据。
+`prebuild` 优先从 Worker API 同步；若无 `ARTICLES_API_URL`，则自动运行 `npm run ingest` 抓取真实 RSS 并写入 `src/data/intelligence/articles.json`。
 
 ### 方式 B — Wrangler 直传
 
@@ -89,10 +114,10 @@ npx wrangler pages deploy dist --project-name=ai-intelligence
 ## 5. 本地开发
 
 ```bash
-# 静态站（使用 seed 数据）
+npm run ingest   # 抓取最新 RSS 并更新 articles.json
 npm run dev
 
-# Worker 本地调试
+# Worker 本地调试（需 wrangler login + D1）
 cd worker && npm run dev
 ```
 
