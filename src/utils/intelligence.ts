@@ -31,3 +31,23 @@ export const INTELLIGENCE_SOURCES = [
   { id: 'google-deepmind', name: 'Google DeepMind', url: 'https://deepmind.google/blog' },
   { id: 'meta-ai', name: 'Meta AI', url: 'https://ai.meta.com/blog' },
 ] as const;
+
+/** Gradient classes for source cover placeholders (inspired by editorial card layouts). */
+export const SOURCE_GRADIENTS: Record<string, string> = {
+  openai: 'from-emerald-600 via-teal-600 to-cyan-800',
+  anthropic: 'from-orange-500 via-amber-500 to-orange-700',
+  cursor: 'from-violet-600 via-purple-600 to-indigo-800',
+  xai: 'from-gray-700 via-gray-800 to-black',
+  'google-deepmind': 'from-blue-600 via-indigo-600 to-blue-800',
+  'meta-ai': 'from-sky-500 via-blue-600 to-blue-800',
+};
+
+export function getSourceGradient(sourceId: string): string {
+  return SOURCE_GRADIENTS[sourceId] ?? 'from-slate-600 via-slate-700 to-slate-900';
+}
+
+export function articleSearchText(article: IntelligenceArticle): string {
+  return [article.title_zh, article.original_title, article.excerpt_zh ?? '', article.source_name, article.source_id]
+    .join(' ')
+    .toLowerCase();
+}

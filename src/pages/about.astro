@@ -1,5 +1,5 @@
 ---
-import Layout from '~/layouts/PageLayout.astro';
+import IntelligenceLayout from '~/layouts/IntelligenceLayout.astro';
 import { SITE } from 'astrowind:config';
 
 const metadata = {
@@ -8,10 +8,14 @@ const metadata = {
 };
 ---
 
-<Layout metadata={metadata}>
-  <section class="bg-page">
-    <div class="prose prose-lg mx-auto max-w-3xl px-4 py-12 dark:prose-invert md:px-6">
-      <h1>关于 {SITE?.name}</h1>
+<IntelligenceLayout metadata={metadata}>
+  <section class="container mx-auto max-w-3xl px-4 py-12 sm:px-6 md:py-16">
+    <header class="mb-10 text-center">
+      <h1 class="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl dark:text-white">关于 {SITE?.name}</h1>
+      <p class="mt-4 text-lg text-gray-600 dark:text-gray-400">官方 RSS 聚合 · Workers AI 翻译 · Cloudflare 免费部署</p>
+    </header>
+
+    <div class="prose prose-lg max-w-none text-gray-700 dark:prose-invert dark:text-gray-300">
       <p>
         本站每日从主流 AI 公司与工具的<strong>官方 RSS/Atom 源</strong>抓取最新文章，使用
         <strong>Cloudflare Workers AI</strong
@@ -26,18 +30,13 @@ const metadata = {
       </ul>
       <h2>我们不做什么</h2>
       <ul>
-        <li>不托管全文内容 — 请通过「阅读原文」访问官方页面</li>
+        <li>不托管全文内容 — 请通过原文链接访问官方页面</li>
         <li>不使用付费翻译 API</li>
         <li>不代表任何被收录公司的官方立场</li>
       </ul>
-      <h2>技术栈</h2>
       <p>
-        前端：Astro v7 + Tailwind CSS v4 · 数据：Cloudflare D1 · 抓取与翻译：Cloudflare Workers + Workers AI ·
-        部署：Cloudflare Pages（免费套餐）
-      </p>
-      <p>
-        <a href="/sources">查看完整信息来源列表 →</a>
+        <a href="/sources" class="font-medium text-brand-blue hover:underline">查看完整信息来源列表 →</a>
       </p>
     </div>
   </section>
-</Layout>
+</IntelligenceLayout>

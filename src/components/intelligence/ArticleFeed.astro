@@ -9,17 +9,63 @@ export interface Props {
 const { articles } = Astro.props;
 ---
 
-{
-  articles.length === 0 ? (
-    <div class="rounded-xl border border-dashed border-gray-300 p-10 text-center dark:border-gray-600">
-      <p class="text-lg font-medium text-gray-900 dark:text-white">暂无情报</p>
-      <p class="mt-2 text-muted">定时任务运行后，最新 AI 官方博客将显示在这里。</p>
-    </div>
-  ) : (
-    <div class="grid gap-5 md:gap-6">
-      {articles.map((article) => (
-        <ArticleCard article={article} />
-      ))}
-    </div>
-  )
-}
+<div class="article-feed">
+  {
+    articles.length === 0 ? (
+      <div class="rounded-xl border border-dashed border-gray-300 p-12 text-center dark:border-gray-600">
+        <p class="text-lg font-medium text-gray-900 dark:text-white">暂无情报</p>
+        <p class="mt-2 text-gray-500 dark:text-gray-400">定时任务运行后，最新 AI 官方博客将显示在这里。</p>
+      </div>
+    ) : (
+      <div id="article-grid" class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {articles.map((article) => (
+          <ArticleCard article={article} />
+        ))}
+        <div
+          id="article-empty"
+          class="hidden col-span-full rounded-xl border border-dashed border-gray-300 p-12 text-center dark:border-gray-600"
+        >
+          <p class="text-lg font-medium text-gray-900 dark:text-white">没有匹配的文章</p>
+          <p class="mt-2 text-gray-500 dark:text-gray-400">试试其他来源或搜索关键词。</p>
+        </div>
+      </div>
+    )
+  }
+</div>
+
+<script>
+  function applyFilters() {
+    const activeSource =
+      document.querySelector<HTMLButtonElement>('.source-filter-btn.is-active')?.dataset.source ?? 'all';
+    const query = (document.querySelector<HTMLInputElement>('#article-search')?.value ?? '').trim().toLowerCase();
+    const cards = document.querySelectorAll<HTMLElement>('.article-card');
+    let visible = 0;
+
+    cards.forEach((card) => {
+      const matchesSource = activeSource === 'all' || card.dataset.source === activeSource;
+      const matchesSearch = !query || (card.dataset.search ?? '').includes(query);
+      const show = matchesSource && matchesSearch;
+      card.classList.toggle('hidden', !show);
+      if (show) visible += 1;
+    });
+
+    document.getElementById('article-empty')?.classList.toggle('hidden', visible > 0);
+  }
+
+  function setActiveFilter(button: HTMLButtonElement) {
+    document.querySelectorAll<HTMLButtonElement>('.source-filter-btn').forEach((btn) => {
+      btn.classList.toggle('is-active', btn === button);
+      btn.setAttribute('aria-selected', String(btn === button));
+    });
+    applyFilters();
+  }
+
+  document.getElementById('source-filters')?.addEventListener('click', (event) => {
+    const button = (event.target as HTMLElement).closest<HTMLButtonElement>('.source-filter-btn');
+    if (button) setActiveFilter(button);
+  });
+
+  document.getElementById('article-search')?.addEventListener('input', applyFilters);
+
+  document.addEventListener('astro:page-load', applyFilters);
+</script>

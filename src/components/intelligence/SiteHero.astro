@@ -1,0 +1,43 @@
+---
+import { SITE, METADATA } from 'astrowind:config';
+
+const tagline = METADATA?.description ?? '聚合官方 AI 博客，自动翻译标题与摘要。';
+---
+
+<section class="bg-gradient-to-b from-white to-transparent py-12 sm:py-16 dark:from-gray-950 dark:to-transparent">
+  <div class="container mx-auto max-w-3xl px-4 text-center sm:px-6">
+    <h1 class="mb-5 text-5xl font-bold tracking-tight text-gray-900 sm:text-6xl md:text-7xl dark:text-white">
+      {SITE?.name}
+    </h1>
+    <p class="mb-8 text-lg leading-relaxed text-gray-600 dark:text-gray-400">
+      {tagline}
+    </p>
+    <label class="relative mx-auto block max-w-xl">
+      <span class="sr-only">搜索文章</span>
+      <span
+        class="flex w-full items-center gap-3 rounded-full border border-gray-200 bg-white px-5 py-3.5 text-left text-gray-500 shadow-sm transition-all focus-within:border-brand-blue focus-within:ring-2 focus-within:ring-brand-blue/20 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-400"
+      >
+        <svg
+          class="h-5 w-5 shrink-0 text-gray-400"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
+        <input
+          id="article-search"
+          type="search"
+          placeholder="搜索标题、来源或摘要…"
+          class="w-full border-0 bg-transparent text-sm text-gray-900 outline-none placeholder:text-gray-400 dark:text-gray-100"
+          autocomplete="off"
+        />
+      </span>
+    </label>
+  </div>
+</section>

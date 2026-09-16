@@ -11,7 +11,7 @@ metadata:
   title:
     default: AI 中文情报站
     template: '%s — AI 中文情报站'
-  description: '每日聚合 OpenAI、Anthropic、Cursor、xAI 等官方 AI 博客，自动翻译为中文摘要，附原文链接。'
+  description: '官方精选，AI 整理，帮你从海量信息中过滤噪音。聚合 OpenAI、Anthropic、Cursor、xAI 等博客，自动翻译摘要。'
   robots:
     index: true
     follow: true

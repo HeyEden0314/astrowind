@@ -1,0 +1,17 @@
+---
+import { SITE } from 'astrowind:config';
+import { getPermalink } from '~/utils/permalinks';
+---
+
+<footer class="border-t border-gray-100 py-10 dark:border-gray-800">
+  <div class="container mx-auto px-4 text-center sm:px-6">
+    <p class="text-sm text-gray-500 dark:text-gray-400">
+      {SITE?.name} · 聚合官方 AI 博客并翻译摘要 · 内容版权归各原文作者所有
+    </p>
+    <p class="mt-2 text-xs text-gray-400 dark:text-gray-500">
+      <a href={getPermalink('/about')} class="hover:text-brand-blue">关于</a>
+      <span class="mx-2">·</span>
+      <a href={getPermalink('/sources')} class="hover:text-brand-blue">来源</a>
+    </p>
+  </div>
+</footer>

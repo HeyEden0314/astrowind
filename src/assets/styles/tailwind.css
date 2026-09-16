@@ -10,6 +10,9 @@
 @custom-variant intersect (&:not([no-intersect]));
 
 @theme {
+  --color-brand-blue: #007aff;
+  --color-brand-orange: #ff9500;
+
   --color-primary: var(--aw-color-primary);
   --color-secondary: var(--aw-color-secondary);
   --color-accent: var(--aw-color-accent);
@@ -52,6 +55,15 @@
 
 @utility text-muted {
   color: var(--aw-color-text-muted);
+}
+
+@utility scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 @utility btn {

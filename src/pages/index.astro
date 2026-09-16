@@ -1,5 +1,7 @@
 ---
-import Layout from '~/layouts/PageLayout.astro';
+import IntelligenceLayout from '~/layouts/IntelligenceLayout.astro';
+import SiteHero from '~/components/intelligence/SiteHero.astro';
+import SourceFilter from '~/components/intelligence/SourceFilter.astro';
 import ArticleFeed from '~/components/intelligence/ArticleFeed.astro';
 import StructuredData from '~/components/common/StructuredData.astro';
 import { SITE, METADATA, I18N } from 'astrowind:config';
@@ -36,22 +38,13 @@ const structuredData = [
 ];
 ---
 
-<Layout metadata={metadata}>
+<IntelligenceLayout metadata={metadata}>
   <StructuredData slot="head" schema={structuredData} />
 
-  <section class="bg-page">
-    <div class="mx-auto max-w-3xl px-4 pb-16 pt-10 md:px-6 md:pb-20 md:pt-14">
-      <header class="mb-10 text-center md:mb-12">
-        <p class="mb-3 text-sm font-medium uppercase tracking-wider text-primary">每日更新</p>
-        <h1 class="text-3xl font-bold tracking-tight text-gray-900 dark:text-white md:text-4xl">
-          {SITE?.name}
-        </h1>
-        <p class="mx-auto mt-4 max-w-2xl text-lg leading-relaxed text-muted">
-          聚合 OpenAI、Anthropic、Cursor、xAI、Google DeepMind、Meta AI 等官方博客，自动翻译标题与摘要，保留原文链接。
-        </p>
-      </header>
+  <SiteHero />
+  <SourceFilter />
 
-      <ArticleFeed articles={articles} />
-    </div>
+  <section class="container mx-auto px-4 sm:px-6">
+    <ArticleFeed articles={articles} />
   </section>
-</Layout>
+</IntelligenceLayout>

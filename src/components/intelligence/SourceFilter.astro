@@ -1,0 +1,39 @@
+---
+import { INTELLIGENCE_SOURCES } from '~/utils/intelligence';
+
+const sources = [{ id: 'all', name: '全部' }, ...INTELLIGENCE_SOURCES.map((s) => ({ id: s.id, name: s.name }))];
+---
+
+<section class="container mx-auto mb-6 px-4 sm:px-6">
+  <div class="scrollbar-hide w-full overflow-x-auto">
+    <div class="flex min-w-max items-center gap-2 pb-2" id="source-filters" role="tablist" aria-label="按来源筛选">
+      {
+        sources.map((source, index) => (
+          <button
+            type="button"
+            role="tab"
+            data-source={source.id}
+            aria-selected={index === 0 ? 'true' : 'false'}
+            class:list={[
+              'source-filter-btn whitespace-nowrap rounded-full border px-4 py-2 text-sm font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-brand-blue/50',
+              index === 0
+                ? 'is-active border-brand-blue bg-brand-blue text-white shadow-sm'
+                : 'border-gray-200 bg-white text-gray-600 hover:border-brand-blue/40 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300',
+            ]}
+          >
+            {source.name}
+          </button>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .source-filter-btn.is-active {
+    border-color: var(--color-brand-blue);
+    background-color: var(--color-brand-blue);
+    color: white;
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  }
+</style>
