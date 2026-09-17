@@ -7,9 +7,12 @@
 > | **Worker URL** | https://ai-intelligence-ingest.heyuan0314.workers.dev |
 > | **Cron** | `0 8 * * *`（每天 08:00 UTC）已绑定；Worker handlers: `fetch`, `scheduled` |
 > | **D1** | `ai-intelligence` (`25077a70-3abe-41ee-aebe-062c196e0baf`) |
+> | **Pages URL** | https://ai-intelligence.pages.dev （2026-09-17 直传 `dist/`，首页 HTML「AI 中文情报站」，23 篇来自 Worker API） |
 > | **首次 POST /api/ingest** | `GET /api/articles` → **count = 23**（openai 8 + anthropic 8 + cursor 7）。xai / google-deepmind / meta-ai / google-ai 未写入，HTTP ingest 约 40s 后中断（免费套餐 CPU/墙钟上限）。每日 Cron 限额更长，08:00 UTC 应补抓剩余源。 |
 >
-> Pages 环境变量：`ARTICLES_API_URL=https://ai-intelligence-ingest.heyuan0314.workers.dev/api/articles`
+> 构建变量：`ARTICLES_API_URL=https://ai-intelligence-ingest.heyuan0314.workers.dev/api/articles`
+>
+> **Deploy hook：** Direct Upload 项目已创建 hook 名 `ingest-rebuild`，但 API 未返回可用 URL（无 Git 源无法重建）。每日 Cron 仍写入 D1；静态站自动 rebuild 需要 Git 连接。见下文「Eden 需在 Dashboard 点击」。
 
 AI 中文情报站由两部分组成：
 
@@ -144,21 +147,22 @@ bash scripts/deploy-pages.sh
 
 生产 URL：`https://ai-intelligence.pages.dev`
 
-### 方式 B — 连接 Git（可选，便于每日 rebuild）
+### Eden 需在 Dashboard 点击（每日自动重建）
 
-1. Cloudflare Dashboard → Workers & Pages → `ai-intelligence` → Settings → Builds & deployments → Connect to Git
-2. 仓库 `HeyEden0314/astrowind`，生产分支按你要发布的分支设置
-3. 构建设置：
-   - **Build command:** `npm run build`
-   - **Build output directory:** `dist`
-   - **Node.js version:** 22
-4. 环境变量（Production + Preview）：
-   - `ARTICLES_API_URL` = `https://ai-intelligence-ingest.heyuan0314.workers.dev/api/articles`
-5. 保存；然后在 Settings → Builds → Deploy hooks 创建 hook，把 URL 写入 Worker 密钥 `DEPLOY_HOOK_URL`
+Direct Upload 项目 **不能** 改成 Git 源（API 错误 8000069）。要让 Worker Cron 在抓取后重建静态站：
+
+1. Dashboard → Workers & Pages → **Create** → Pages → **Connect to Git**（授权 GitHub `HeyEden0314/astrowind`）
+2. 新项目名例如 `ai-intelligence-git`（不要覆盖现有 Direct Upload 的 `ai-intelligence`）
+3. Build command `npm run build`，output `dist`，Node 22
+4. 环境变量 `ARTICLES_API_URL=https://ai-intelligence-ingest.heyuan0314.workers.dev/api/articles`
+5. Settings → Deploy hooks → Create → 复制 URL
+6. 本机：`cd worker && npx wrangler secret put DEPLOY_HOOK_URL` 粘贴 hook URL
+
+Git 项目上线前，生产站继续用 https://ai-intelligence.pages.dev 。
 
 ## 4. 更新站点 URL
 
-部署后，将 `src/config.yaml` 中 `site.site` 改为你的 Pages 域名（如 `https://ai-intelligence.pages.dev`），重新构建。
+`src/config.yaml` 中 `site.site` 已是 `https://ai-intelligence.pages.dev`。若改用自定义域或新的 Git Pages 项目，更新后再构建。
 
 ## 5. 本地开发
 
