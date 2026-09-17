@@ -53,3 +53,5 @@ jobs:
 
       - name: Build application
         run: npm run build
+        env:
+          ARTICLES_API_URL: https://ai-intelligence-ingest.heyuan0314.workers.dev/api/articles

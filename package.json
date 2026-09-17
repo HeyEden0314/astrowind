@@ -13,6 +13,7 @@
     "ingest": "node scripts/ingest.mjs",
     "prebuild": "node scripts/sync-articles.mjs",
     "build": "astro build",
+    "deploy:pages": "bash scripts/deploy-pages.sh",
     "preview": "astro preview",
     "astro": "astro",
     "check": "npm run check:astro && npm run check:eslint && npm run check:prettier",

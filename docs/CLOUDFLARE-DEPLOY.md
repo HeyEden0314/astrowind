@@ -120,31 +120,41 @@ npx wrangler secret put DEPLOY_HOOK_URL
 
 Cron 默认每天 **08:00 UTC** 运行（见 `worker/wrangler.toml`）。
 
-## 3. 部署 Pages 静态站
+## 3. 部署 Pages 静态站（整个站点）
 
-### 方式 A — 连接 Git（推荐）
+站点构建目标是 **Cloudflare Pages**，不是 Netlify / Vercel。静态输出目录为 `dist/`（`output: 'static'`，无需 `@astrojs/cloudflare` SSR adapter）。
 
-1. Cloudflare Dashboard → Workers & Pages → Create → Pages → Connect to Git
-2. 选择本仓库分支
-3. 构建设置：
-   - **Build command:** `npm run build`
-   - **Build output directory:** `dist`
-   - **Node.js version:** 22（与 `package.json` engines 一致）
-4. 环境变量（Production + Preview 建议都设）：
-   - `ARTICLES_API_URL` = `https://ai-intelligence-ingest.<account-subdomain>.workers.dev/api/articles`
-5. 保存并部署
+**必填构建变量：**
 
-部署 Worker 并跑过首次 ingest 后，将上述 URL 写入 Pages 环境变量；`prebuild` 会从 API 拉取 D1 中的文章。
+```text
+ARTICLES_API_URL=https://ai-intelligence-ingest.heyuan0314.workers.dev/api/articles
+```
 
-`prebuild` 优先从 Worker API 同步；若无 `ARTICLES_API_URL`，则自动运行 `npm run ingest` 抓取真实 RSS 并写入 `src/data/intelligence/articles.json`。
+`prebuild`（`scripts/sync-articles.mjs`）会从该 URL 拉取 D1 文章。若未设置或 API 失败，则回退到 `npm run ingest`。
 
-### 方式 B — Wrangler 直传
+### 方式 A — Wrangler 直传（已用于生产）
 
 ```bash
 npm ci
-ARTICLES_API_URL=https://... npm run build
-npx wrangler pages deploy dist --project-name=ai-intelligence
+bash scripts/deploy-pages.sh
+# 等价于：
+# ARTICLES_API_URL=https://ai-intelligence-ingest.heyuan0314.workers.dev/api/articles npm run build
+# npx wrangler pages deploy dist --project-name=ai-intelligence --branch=main
 ```
+
+生产 URL：`https://ai-intelligence.pages.dev`
+
+### 方式 B — 连接 Git（可选，便于每日 rebuild）
+
+1. Cloudflare Dashboard → Workers & Pages → `ai-intelligence` → Settings → Builds & deployments → Connect to Git
+2. 仓库 `HeyEden0314/astrowind`，生产分支按你要发布的分支设置
+3. 构建设置：
+   - **Build command:** `npm run build`
+   - **Build output directory:** `dist`
+   - **Node.js version:** 22
+4. 环境变量（Production + Preview）：
+   - `ARTICLES_API_URL` = `https://ai-intelligence-ingest.heyuan0314.workers.dev/api/articles`
+5. 保存；然后在 Settings → Builds → Deploy hooks 创建 hook，把 URL 写入 Worker 密钥 `DEPLOY_HOOK_URL`
 
 ## 4. 更新站点 URL
 

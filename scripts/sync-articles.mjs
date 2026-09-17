@@ -12,9 +12,18 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, '..');
 const apiUrl = process.env.ARTICLES_API_URL;
 
+function resolveArticlesUrl(rawUrl) {
+  const trimmed = rawUrl.trim().replace(/\/$/, '');
+  if (trimmed.includes('?')) return trimmed;
+  if (/\/api\/articles$/i.test(trimmed)) {
+    return `${trimmed}?limit=120`;
+  }
+  return `${trimmed}/api/articles?limit=120`;
+}
+
 async function fetchRemote() {
   if (!apiUrl) return null;
-  const url = apiUrl.includes('?') ? apiUrl : `${apiUrl.replace(/\/$/, '')}/api/articles?limit=120`;
+  const url = resolveArticlesUrl(apiUrl);
   const response = await fetch(url, {
     headers: { Accept: 'application/json' },
   });

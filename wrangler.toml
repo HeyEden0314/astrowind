@@ -3,5 +3,6 @@ name = "ai-intelligence"
 compatibility_date = "2025-03-01"
 pages_build_output_dir = "dist"
 
-# Set in the Pages dashboard (Settings → Environment variables):
-# ARTICLES_API_URL = https://<your-ingest-worker>.workers.dev/api/articles
+# Production site: https://ai-intelligence.pages.dev
+# Ingest API used at build time (prebuild → scripts/sync-articles.mjs):
+# ARTICLES_API_URL = https://ai-intelligence-ingest.heyuan0314.workers.dev/api/articles

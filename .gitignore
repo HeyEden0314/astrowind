@@ -26,3 +26,6 @@ pnpm-lock.yaml
 pnpm-workspace.yaml
 
 .astro
+
+# Wrangler local cache (Pages project list, account)
+.wrangler/
