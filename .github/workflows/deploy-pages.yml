@@ -1,0 +1,68 @@
+name: Deploy Cloudflare Pages
+
+on:
+  push:
+    branches:
+      - main
+      - cursor/chinese-ai-intelligence-8259
+  workflow_dispatch:
+  repository_dispatch:
+    types: [rebuild-pages]
+  schedule:
+    # After the ingest Worker cron at 08:00 UTC
+    - cron: '30 8 * * *'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages-production
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Build and deploy Pages
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check Cloudflare token
+        id: cf
+        env:
+          TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          if [ -z "$TOKEN" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::CLOUDFLARE_API_TOKEN is not set. Skipping Pages deploy. Add the secret, or reinstall the Cloudflare GitHub App — see docs/CLOUDFLARE-DEPLOY.md"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Checkout repository
+        if: steps.cf.outputs.skip != 'true'
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        if: steps.cf.outputs.skip != 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        if: steps.cf.outputs.skip != 'true'
+        run: npm ci
+
+      - name: Build application
+        if: steps.cf.outputs.skip != 'true'
+        run: npm run build
+        env:
+          ARTICLES_API_URL: https://ai-intelligence-ingest.heyuan0314.workers.dev/api/articles
+
+      - name: Deploy to Cloudflare Pages
+        if: steps.cf.outputs.skip != 'true'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ade8b4f2d997573278b0954562adee1a
+          command: pages deploy dist --project-name=ai-intelligence --branch=main

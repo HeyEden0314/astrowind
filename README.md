@@ -261,7 +261,7 @@ prefer.
 
 #### Deploy to Cloudflare Pages
 
-This project ships to **Cloudflare Pages** (static `dist/`). The ingest Worker at `https://ai-intelligence-ingest.heyuan0314.workers.dev` is the articles API.
+This project ships to **Cloudflare Pages** (static `dist/`). The ingest Worker at `https://ai-intelligence-ingest.heyuan0314.workers.dev` is the articles API. Live URL: https://ai-intelligence.pages.dev
 
 ```shell
 npm ci
@@ -269,7 +269,7 @@ ARTICLES_API_URL=https://ai-intelligence-ingest.heyuan0314.workers.dev/api/artic
 npx wrangler pages deploy dist --project-name=ai-intelligence --branch=main
 ```
 
-Full steps (Worker cron, D1, deploy hook): [docs/CLOUDFLARE-DEPLOY.md](./docs/CLOUDFLARE-DEPLOY.md).
+Git continuous deploy (keeps that URL) is [`.github/workflows/deploy-pages.yml`](./.github/workflows/deploy-pages.yml) after the `CLOUDFLARE_API_TOKEN` secret is set. Native Pages ↔ GitHub is blocked until the Cloudflare GitHub App is reinstalled. Full steps: [docs/CLOUDFLARE-DEPLOY.md](./docs/CLOUDFLARE-DEPLOY.md).
 
 <br>
 

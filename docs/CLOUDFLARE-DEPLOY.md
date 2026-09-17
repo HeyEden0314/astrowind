@@ -7,12 +7,12 @@
 > | **Worker URL** | https://ai-intelligence-ingest.heyuan0314.workers.dev |
 > | **Cron** | `0 8 * * *`（每天 08:00 UTC）已绑定；Worker handlers: `fetch`, `scheduled` |
 > | **D1** | `ai-intelligence` (`25077a70-3abe-41ee-aebe-062c196e0baf`) |
-> | **Pages URL** | https://ai-intelligence.pages.dev （2026-09-17 直传 `dist/`，首页 HTML「AI 中文情报站」，23 篇来自 Worker API） |
+> | **Pages URL** | https://ai-intelligence.pages.dev （Direct Upload 项目 `ai-intelligence`；首页 HTML「AI 中文情报站」） |
 > | **首次 POST /api/ingest** | `GET /api/articles` → **count = 23**（openai 8 + anthropic 8 + cursor 7）。xai / google-deepmind / meta-ai / google-ai 未写入，HTTP ingest 约 40s 后中断（免费套餐 CPU/墙钟上限）。每日 Cron 限额更长，08:00 UTC 应补抓剩余源。 |
 >
-> 构建变量：`ARTICLES_API_URL=https://ai-intelligence-ingest.heyuan0314.workers.dev/api/articles`
+> 构建变量（已写入 Pages production + preview）：`ARTICLES_API_URL=https://ai-intelligence-ingest.heyuan0314.workers.dev/api/articles`，`NODE_VERSION=22`
 >
-> **Deploy hook：** Direct Upload 项目已创建 hook 名 `ingest-rebuild`，但 API 未返回可用 URL（无 Git 源无法重建）。每日 Cron 仍写入 D1；静态站自动 rebuild 需要 Git 连接。见下文「Eden 需在 Dashboard 点击」。
+> **Git CD 状态（2026-09-17）：** Direct Upload **不能**改 Git 源（API **8000069**）。新建 Git 项目失败：Pages GitHub 安装损坏（API **8000011**）。Deploy hook `ingest-rebuild`（branch `main`）已重建，但 POST 该 hook 返回 **500**（无 Git 源无法 rebuild）。Worker **未**设置 `DEPLOY_HOOK_URL`（避免 Cron 打坏掉的 hook）。见下文「Eden 必须点击」。
 
 AI 中文情报站由两部分组成：
 
@@ -147,18 +147,48 @@ bash scripts/deploy-pages.sh
 
 生产 URL：`https://ai-intelligence.pages.dev`
 
-### Eden 需在 Dashboard 点击（每日自动重建）
+### 方式 B — GitHub Actions → 现有 Direct Upload 项目（保持同一 URL）
 
-Direct Upload 项目 **不能** 改成 Git 源（API 错误 8000069）。要让 Worker Cron 在抓取后重建静态站：
+工作流：`.github/workflows/deploy-pages.yml`
 
-1. Dashboard → Workers & Pages → **Create** → Pages → **Connect to Git**（授权 GitHub `HeyEden0314/astrowind`）
-2. 新项目名例如 `ai-intelligence-git`（不要覆盖现有 Direct Upload 的 `ai-intelligence`）
-3. Build command `npm run build`，output `dist`，Node 22
-4. 环境变量 `ARTICLES_API_URL=https://ai-intelligence-ingest.heyuan0314.workers.dev/api/articles`
-5. Settings → Deploy hooks → Create → 复制 URL
-6. 本机：`cd worker && npx wrangler secret put DEPLOY_HOOK_URL` 粘贴 hook URL
+- 触发：push 到 `main` 或 `cursor/chinese-ai-intelligence-8259`、每天 08:30 UTC、`workflow_dispatch`
+- 构建：`npm run build`，Node 22，`ARTICLES_API_URL` 同上
+- 发布：`wrangler pages deploy dist --project-name=ai-intelligence --branch=main`
+- 无 `CLOUDFLARE_API_TOKEN` 时 **跳过 deploy**（检查不会红）
 
-Git 项目上线前，生产站继续用 https://ai-intelligence.pages.dev 。
+PR 合入 `main` 后，把工作流里的 feature 分支触发删掉即可。
+
+### Eden 必须点击（两选一，或都做）
+
+**A. 打开 GitHub Actions 自动发布（推荐，保持 https://ai-intelligence.pages.dev）**
+
+1. 打开 [Create API Token](https://dash.cloudflare.com/profile/api-tokens)（登录 `heyuan0314@gmail.com`）
+2. **Create Token** → 模板 **Edit Cloudflare Workers**（需含 **Cloudflare Pages — Edit**）→ **Continue to summary** → **Create Token** → 复制
+3. 打开 [astrowind Actions secrets](https://github.com/HeyEden0314/astrowind/settings/secrets/actions/new)
+4. Name: `CLOUDFLARE_API_TOKEN` → 粘贴 token → **Add secret**
+5. 打开 [Actions → Deploy Cloudflare Pages](https://github.com/HeyEden0314/astrowind/actions/workflows/deploy-pages.yml) → **Run workflow** → 选 `cursor/chinese-ai-intelligence-8259`（合入后改用 `main`）→ **Run workflow**
+
+**B. 修复 Cloudflare Pages 原生 Git（Deploy hook 给 Worker Cron 用）**
+
+API 错误 **8000011**：当前账户的 Pages GitHub 安装已损坏，必须重装后才能 `Connect to Git`。
+
+1. 打开 [GitHub Applications](https://github.com/settings/installations)
+2. 若有 **Cloudflare Workers and Pages**：Configure → 页面底部 **Uninstall**
+3. 打开 [Install Cloudflare Workers and Pages](https://github.com/apps/cloudflare-workers-and-pages/installations/new)
+4. 选 GitHub 用户 **HeyEden0314** → **Only select repositories** → **astrowind** → **Install** / **Install & Authorize**
+5. 打开 Cloudflare（必须已登录 `heyuan0314@gmail.com`）：[Workers & Pages](https://dash.cloudflare.com/ade8b4f2d997573278b0954562adee1a/workers-and-pages)
+6. **Create** → **Pages** → **Connect to Git** → GitHub → 仓库 `HeyEden0314/astrowind`
+7. **Project name:** `ai-intelligence-git`（不要删现有 `ai-intelligence`，否则 https://ai-intelligence.pages.dev 会短暂下线）
+8. **Production branch:** `cursor/chinese-ai-intelligence-8259`（PR #2 合入后改为 `main`）
+9. Build command `npm run build`，output directory `dist`，Root `/`
+10. Environment variables（Production **和** Preview）：
+    - `ARTICLES_API_URL` = `https://ai-intelligence-ingest.heyuan0314.workers.dev/api/articles`
+    - `NODE_VERSION` = `22`
+11. **Save and Deploy**，等构建变绿，打开 `https://ai-intelligence-git.pages.dev` 确认首页 HTML
+12. 该 Git 项目 → **Settings** → **Builds** → **Add deploy hook**，名称 `ingest-rebuild`，branch 与 production branch 相同 → 复制 URL
+13. 本机：`cd worker && npx wrangler secret put DEPLOY_HOOK_URL` 粘贴 hook URL
+
+原生 Git **不能**接管现有 Direct Upload 项目。要让 `*.pages.dev` 仍叫 `ai-intelligence`：等 Git 项目构建成功后，再删 Direct Upload `ai-intelligence`，用**同名**新建 Git 项目（有空窗）。在此之前生产站继续用 https://ai-intelligence.pages.dev 。
 
 ## 4. 更新站点 URL
 
