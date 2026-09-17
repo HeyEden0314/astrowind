@@ -1,0 +1,43 @@
+---
+import IntelligenceLayout from '~/layouts/IntelligenceLayout.astro';
+import { INTELLIGENCE_SOURCES } from '~/utils/intelligence';
+
+const metadata = {
+  title: '信息来源',
+  description: 'AI 中文情报站收录的官方 RSS/Atom 博客来源。',
+};
+---
+
+<IntelligenceLayout metadata={metadata}>
+  <section class="container mx-auto max-w-3xl px-4 py-12 sm:px-6 md:py-16">
+    <header class="mb-10 text-center">
+      <h1 class="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl dark:text-white">信息来源</h1>
+      <p class="mt-4 text-lg text-gray-600 dark:text-gray-400">
+        优先使用官方 RSS/Atom；Anthropic、Meta AI、xAI 无公开源时使用社区镜像（见 ingest.config.json）。
+      </p>
+    </header>
+
+    <ul
+      class="divide-y divide-gray-100 overflow-hidden rounded-xl border border-gray-100 bg-white dark:divide-gray-800 dark:border-gray-800 dark:bg-gray-900"
+    >
+      {
+        INTELLIGENCE_SOURCES.map((source) => (
+          <li class="flex flex-wrap items-center justify-between gap-3 px-5 py-4 transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/50">
+            <div>
+              <p class="font-semibold text-gray-900 dark:text-white">{source.name}</p>
+              <p class="text-sm text-gray-500 dark:text-gray-400">{source.id}</p>
+            </div>
+            <a
+              href={source.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-sm font-medium text-brand-blue hover:underline"
+            >
+              访问官方博客 →
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+</IntelligenceLayout>

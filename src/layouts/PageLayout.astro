@@ -26,7 +26,13 @@ const { metadata } = Astro.props;
     goes missing on that page.
   */
   }
-  {Astro.slots.has('announcement') ? <slot name="announcement" /> : <Announcement />}
+  {
+    Astro.slots.has('announcement') ? (
+      <slot name="announcement" />
+    ) : (
+      <Announcement badge="每日" text="自动聚合官方 AI 博客并翻译摘要" href="/about" showStars={false} />
+    )
+  }
   {Astro.slots.has('header') ? <slot name="header" /> : <Header {...headerData} isSticky showRssFeed showToggleTheme />}
   <main class="flex-1">
     <slot />

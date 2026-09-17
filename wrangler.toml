@@ -1,0 +1,12 @@
+# Cloudflare Pages — static Astro output (see docs/CLOUDFLARE-DEPLOY.md)
+name = "ai-intelligence"
+compatibility_date = "2025-03-01"
+pages_build_output_dir = "dist"
+
+# Production site: https://ai-intelligence.pages.dev
+# This project is Direct Upload (cannot attach Git; API 8000069).
+# Native Pages Git needs a GitHub App reinstall first (API 8000011).
+# Git CD that keeps this URL: .github/workflows/deploy-pages.yml
+# Ingest API used at build time (prebuild → scripts/sync-articles.mjs):
+# ARTICLES_API_URL = https://ai-intelligence-ingest.heyuan0314.workers.dev/api/articles
+# NODE_VERSION = 22 (also .nvmrc)

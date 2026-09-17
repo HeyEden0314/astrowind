@@ -53,7 +53,7 @@
 
 ## Demo
 
-📌 [https://astrowind.vercel.app/](https://astrowind.vercel.app/)
+📌 [https://ai-intelligence.pages.dev/](https://ai-intelligence.pages.dev/) — AI 中文情报站 on Cloudflare Pages.
 
 <br>
 
@@ -259,23 +259,17 @@ Now, your website is ready to be deployed. All generated files are located at
 `dist` folder, which you can deploy the folder to any hosting service you
 prefer.
 
-#### Deploy to Netlify
+#### Deploy to Cloudflare Pages
 
-Clone this repository on your own GitHub account and deploy it to Netlify:
+This project ships to **Cloudflare Pages** (static `dist/`). The ingest Worker at `https://ai-intelligence-ingest.heyuan0314.workers.dev` is the articles API. Live URL: https://ai-intelligence.pages.dev
 
-[![Netlify Deploy button](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/arthelokyo/astrowind)
+```shell
+npm ci
+ARTICLES_API_URL=https://ai-intelligence-ingest.heyuan0314.workers.dev/api/articles npm run build
+npx wrangler pages deploy dist --project-name=ai-intelligence --branch=main
+```
 
-#### Deploy to Vercel
-
-Clone this repository on your own GitHub account and deploy to Vercel:
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Farthelokyo%2Fastrowind)
-
-#### Deploy to PandaStack
-
-Clone this repository on your own GitHub account and deploy to PandaStack:
-
-[![Deploy to PandaStack](https://dashboard.pandastack.io/deploy-button.svg)](https://dashboard.pandastack.io/deploy?repo=arthelokyo/astrowind&type=static&buildCmd=npm+run+build&outputDir=dist)
+Git continuous deploy (keeps that URL) is [`.github/workflows/deploy-pages.yml`](./.github/workflows/deploy-pages.yml) after the `CLOUDFLARE_API_TOKEN` secret is set. Native Pages ↔ GitHub is blocked until the Cloudflare GitHub App is reinstalled. Full steps: [docs/CLOUDFLARE-DEPLOY.md](./docs/CLOUDFLARE-DEPLOY.md).
 
 <br>
 

@@ -1,0 +1,78 @@
+---
+import { articleSearchText, formatChineseDate, getSourceGradient } from '~/utils/intelligence';
+import type { IntelligenceArticle } from '~/types/intelligence';
+
+export interface Props {
+  article: IntelligenceArticle;
+}
+
+const { article } = Astro.props;
+const gradient = getSourceGradient(article.source_id);
+const searchText = articleSearchText(article);
+---
+
+<article
+  class="article-card group relative flex flex-col overflow-hidden rounded-xl border border-gray-100 bg-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg dark:border-gray-800 dark:bg-gray-900"
+  data-source={article.source_id}
+  data-search={searchText}
+>
+  <a
+    href={article.original_url}
+    target="_blank"
+    rel="noopener noreferrer"
+    class="absolute inset-0 z-0"
+    aria-label={`阅读原文：${article.title_zh}`}
+  >
+    <span class="sr-only">阅读原文</span>
+  </a>
+
+  <div class={`relative aspect-video w-full overflow-hidden bg-gradient-to-br ${gradient} pointer-events-none`}>
+    <div class="absolute inset-0 bg-black/10"></div>
+    <div class="absolute bottom-0 left-0 right-0 flex h-16 items-end bg-gradient-to-t from-black/50 to-transparent p-3">
+      <div class="flex w-full items-center justify-between text-white">
+        <span class="max-w-[140px] truncate text-xs font-medium text-white/90 drop-shadow-sm">
+          {article.source_name}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div class="pointer-events-none relative z-10 flex flex-1 flex-col gap-3 p-4">
+    <div class="flex items-center justify-between gap-2">
+      <span
+        class="inline-flex items-center rounded-full border border-blue-100 bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-600 dark:border-blue-900 dark:bg-blue-950 dark:text-blue-300"
+      >
+        {article.source_name}
+      </span>
+      <time class="whitespace-nowrap text-sm text-gray-500 dark:text-gray-400" datetime={article.published_at}>
+        {formatChineseDate(article.published_at)}
+      </time>
+    </div>
+
+    <h2
+      class="line-clamp-2 text-lg font-bold leading-snug text-gray-900 transition-colors group-hover:text-brand-blue dark:text-white dark:group-hover:text-brand-blue"
+    >
+      {article.title_zh}
+    </h2>
+
+    <p class="line-clamp-1 text-sm text-gray-500 dark:text-gray-400" lang="en">
+      <span class="inline-flex items-center gap-1">
+        <span aria-hidden="true">🔗</span>
+        {article.original_title}
+      </span>
+    </p>
+
+    {
+      article.excerpt_zh && (
+        <div class="mt-1 border-t border-gray-50 pt-3 dark:border-gray-800">
+          <div class="relative py-1 pl-4">
+            <div class="absolute left-0 top-0 bottom-0 w-1 rounded-full bg-brand-orange" aria-hidden="true" />
+            <p class="line-clamp-3 text-sm italic leading-relaxed text-gray-600 dark:text-gray-400">
+              “{article.excerpt_zh}”
+            </p>
+          </div>
+        </div>
+      )
+    }
+  </div>
+</article>

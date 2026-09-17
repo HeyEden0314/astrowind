@@ -1,49 +1,20 @@
-import { getRssString } from '@astrojs/rss';
+import rss from '@astrojs/rss';
+import { SITE, METADATA } from 'astrowind:config';
+import { getIntelligenceArticles } from '~/utils/intelligence';
 
-import { SITE, METADATA, APP_BLOG, I18N } from 'astrowind:config';
-import { fetchPosts } from '~/utils/blog';
-import { getPermalink } from '~/utils/permalinks';
+export async function GET() {
+  const articles = getIntelligenceArticles();
 
-// The feed is generated from the build-time content collection, so keep it
-// prerendered even if the project opts into on-demand rendering.
-export const prerender = true;
-
-export const GET = async () => {
-  if (!APP_BLOG.isEnabled) {
-    return new Response(null, {
-      status: 404,
-      statusText: 'Not found',
-    });
-  }
-
-  const posts = await fetchPosts();
-
-  const rss = await getRssString({
-    title: `${SITE.name}’s Blog`,
-    description: METADATA?.description || '',
-    site: import.meta.env.SITE,
-
-    items: posts.map((post) => ({
-      link: getPermalink(post.permalink, 'post'),
-      title: post.title,
-      description: post.excerpt,
-      pubDate: post.publishDate,
-      ...(post.author ? { author: post.author } : {}),
-      categories: [...(post.category ? [post.category.title] : []), ...(post.tags ?? []).map((tag) => tag.title)],
+  return rss({
+    title: SITE?.name ?? 'AI 中文情报站',
+    description: METADATA?.description ?? '',
+    site: SITE?.site ?? 'https://example.com',
+    items: articles.map((article) => ({
+      title: article.title_zh,
+      description: article.excerpt_zh ?? article.original_title,
+      pubDate: new Date(article.published_at),
+      link: article.original_url,
     })),
-
-    trailingSlash: SITE.trailingSlash,
-    xmlns: { atom: 'http://www.w3.org/2005/Atom' },
-    customData: [
-      `<language>${I18N?.language || 'en'}</language>`,
-      `<lastBuildDate>${new Date().toUTCString()}</lastBuildDate>`,
-      `<atom:link href="${new URL(getPermalink('rss.xml', 'asset'), import.meta.env.SITE)}" rel="self" type="application/rss+xml" />`,
-    ].join(''),
+    customData: `<language>zh-CN</language>`,
   });
-
-  return new Response(rss, {
-    headers: {
-      'Content-Type': 'application/xml',
-    },
-  });
-};
+}
